@@ -1,9 +1,9 @@
-package com.intesi.docsafey.entity.RichiestaCons;
+package com.intesi.docsafey.entity.richiestaCons;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.intesi.docsafey.entity.Documento.Documento;
+import com.intesi.docsafey.entity.documento.Documento;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

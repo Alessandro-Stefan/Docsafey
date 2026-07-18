@@ -1,11 +1,11 @@
-package com.intesi.docsafey.entity.Documento;
+package com.intesi.docsafey.entity.documento;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Type;
 
-import com.intesi.docsafey.entity.RichiestaCons.RichiestaConservazione;
+import com.intesi.docsafey.entity.richiestaCons.RichiestaConservazione;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

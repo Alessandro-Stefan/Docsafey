@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.intesi.docsafey.dto.RichiestaCons.AddRichiestaConsRequest;
-import com.intesi.docsafey.dto.RichiestaCons.GetRichiestaConsResponse;
+import com.intesi.docsafey.dto.richiestaCons.AddRichiestaConsRequest;
+import com.intesi.docsafey.dto.richiestaCons.GetRichiestaConsResponse;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;

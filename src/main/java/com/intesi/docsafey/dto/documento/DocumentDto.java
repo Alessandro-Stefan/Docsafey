@@ -1,4 +1,4 @@
-package com.intesi.docsafey.dto.Documento;
+package com.intesi.docsafey.dto.documento;
 
 import java.time.LocalDate;
 

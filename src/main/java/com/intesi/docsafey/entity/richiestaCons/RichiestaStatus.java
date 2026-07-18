@@ -1,4 +1,4 @@
-package com.intesi.docsafey.entity.RichiestaCons;
+package com.intesi.docsafey.entity.richiestaCons;
 
 public enum RichiestaStatus {
     RECEIVED,

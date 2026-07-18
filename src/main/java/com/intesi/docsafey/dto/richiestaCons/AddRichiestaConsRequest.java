@@ -1,8 +1,8 @@
-package com.intesi.docsafey.dto.RichiestaCons;
+package com.intesi.docsafey.dto.richiestaCons;
 
 import java.util.List;
 
-import com.intesi.docsafey.dto.Documento.DocumentDto;
+import com.intesi.docsafey.dto.documento.DocumentDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
