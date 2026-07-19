@@ -4,11 +4,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.intesi.docsafey.dto.richiestaCons.AddRichiestaConsRequest;
+import com.intesi.docsafey.dto.richiestaCons.GeneralRichiestaConsDto;
 import com.intesi.docsafey.dto.richiestaCons.RichiestaConsDto;
+import com.intesi.docsafey.dto.richiestaCons.SearchRichiestaConsResponse;
 import com.intesi.docsafey.dto.richiestaCons.ValidateRichiestaConsRequest;
 import com.intesi.docsafey.entity.documento.Documento;
 import com.intesi.docsafey.entity.richiestaCons.RichiestaConservazione;
@@ -20,6 +25,7 @@ import com.intesi.docsafey.mapper.DocumentoMapper;
 import com.intesi.docsafey.mapper.RichiestaConsMapper;
 import com.intesi.docsafey.repository.DocumentoRepository;
 import com.intesi.docsafey.repository.RichiestaConsRepository;
+import com.intesi.docsafey.repository.specification.RichiestaConsSpecifications;
 
 @Service
 public class RichiestaConsServiceImpl implements RichiestaConsService{
@@ -40,16 +46,16 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
     @Override
     @Transactional
     public Long addRichiestaCons(AddRichiestaConsRequest request) {
-        Optional<RichiestaConservazione> entityCheck = richiestaConsRepo.findByProducerIdAndExternalId(request.producerId(), request.externalId());
+        boolean exists = richiestaConsRepo.existsByProducerIdAndExternalId(request.producerId(), request.externalId());
 
-        if (entityCheck.isPresent())
+        if (exists)
             throw new RichiestaAlreadyExistsException(request.producerId(), request.externalId());
 
         RichiestaConservazione entity = richiestaConsMapper.toEntity(request);
-        List<Documento> docs = documentoMapper.toEntityList(request.documents(), entity);
-
-        documentoRepo.saveAll(docs);
         richiestaConsRepo.save(entity);
+
+        List<Documento> docs = documentoMapper.toEntityList(request.documents(), entity);
+        documentoRepo.saveAll(docs);
 
         return entity.getId();
     }
@@ -62,6 +68,41 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
            throw new RichiestaNotFoundException(id); 
     
         RichiestaConsDto res = richiestaConsMapper.toDto(entity.get());
+        return res;
+    }
+
+    @Override
+    public SearchRichiestaConsResponse searchRichiestaCons(Long producerId, String status, Pageable pageable) {
+        RichiestaStatus statusQuery = null;
+
+        if (status != null) {
+            try {
+            statusQuery = RichiestaStatus.valueOf(status);
+            } catch (IllegalArgumentException ex) {
+                throw new RichiestaInvalidStatusException(status);
+            }
+        }
+
+        Specification<RichiestaConservazione> spec = Specification.allOf(
+            RichiestaConsSpecifications .hasProducerId(producerId),
+            RichiestaConsSpecifications.hasStatus(statusQuery)
+        );
+
+        Page<RichiestaConservazione> page = richiestaConsRepo.findAll(spec, pageable);
+
+        List<GeneralRichiestaConsDto> richieste = page.getContent()
+                                                        .stream()
+                                                        .map(richiestaConsMapper::toGeneralDto)
+                                                        .toList();
+
+        SearchRichiestaConsResponse res = new SearchRichiestaConsResponse(
+            richieste,
+            page.getNumber(),
+            page.getSize(),
+            page.getTotalElements(),
+            page.getTotalPages()
+        );
+
         return res;
     }
 

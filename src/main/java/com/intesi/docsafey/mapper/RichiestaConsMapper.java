@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 import com.intesi.docsafey.dto.richiestaCons.AddRichiestaConsRequest;
+import com.intesi.docsafey.dto.richiestaCons.GeneralRichiestaConsDto;
 import com.intesi.docsafey.dto.richiestaCons.RichiestaConsDto;
 import com.intesi.docsafey.entity.richiestaCons.RichiestaConservazione;
 import com.intesi.docsafey.entity.richiestaCons.RichiestaStatus;
@@ -36,10 +37,21 @@ public class RichiestaConsMapper {
             entity.getProducerId(),
             entity.getExternalId(),
             entity.getDocumentType(),
-            entity.getStatus().name(),
+            entity.getStatus().toString(),
             entity.getCreatedAt().toString(),
             docMapper.toDtoList(entity.getDocuments()));
 
+        return dto;
+    }
+
+    public GeneralRichiestaConsDto toGeneralDto(RichiestaConservazione entity){
+        GeneralRichiestaConsDto dto = new GeneralRichiestaConsDto(
+            entity.getId(),
+            entity.getDocumentType(),
+            entity.getStatus().toString(),
+            entity.getCreatedAt().toString()
+        );
+    
         return dto;
     }
 }
