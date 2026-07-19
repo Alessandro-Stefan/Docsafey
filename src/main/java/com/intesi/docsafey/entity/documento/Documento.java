@@ -1,9 +1,6 @@
 package com.intesi.docsafey.entity.documento;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.Type;
 
 import com.intesi.docsafey.entity.richiestaCons.RichiestaConservazione;
 
@@ -24,23 +21,24 @@ import lombok.Data;
 public class Documento {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY) 
-   Long id;
+   private Long id;
 
    @Column(name = "name_file", nullable = false)
-   String fileName;
+   private String fileName;
 
    @Column(name = "mime_type", nullable = false)
-   String mimeType;
+   private String mimeType;
 
    @Column(name = "file_size", nullable = false)
-   Integer fileSize;
+   private Integer fileSize;
 
    @Column(name = "hash", nullable = false)
-   String hash;
+   private String hash;
 
    @Column(name = "document_date", nullable = false)
-   LocalDate documentDate;
+   private LocalDate documentDate;
 
    @ManyToOne(fetch = FetchType.LAZY)
-   RichiestaConservazione request;
+   @JoinColumn(name = "request_id")
+   private RichiestaConservazione request;
 }

@@ -9,8 +9,13 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    hibernate:
-      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        ddl-auto: update
+        order_inserts: true
+        order_updates: true
 
   web:
     error:

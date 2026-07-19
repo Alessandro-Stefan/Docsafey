@@ -5,35 +5,50 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.intesi.docsafey.dto.richiestaCons.AddRichiestaConsRequest;
-import com.intesi.docsafey.dto.richiestaCons.GetRichiestaConsResponse;
+import com.intesi.docsafey.dto.richiestaCons.RichiestaConsDto;
+import com.intesi.docsafey.dto.richiestaCons.ValidateRichiestaConsRequest;
+import com.intesi.docsafey.service.RichiestaConsService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
 @RequestMapping("/v1/conservazione")
 public class RichiestaConsController {
+
+     private final RichiestaConsService service;
+
+     public RichiestaConsController(RichiestaConsService service) {
+          this.service = service;
+     }
    
     @GetMapping("/{id}")
-    public ResponseEntity<GetRichiestaConsResponse> getRichiestaConsById(@PathVariable Long id) {
-        GetRichiestaConsResponse res = null;
+    public ResponseEntity<RichiestaConsDto> getRichiestaConsById(@PathVariable Long id) {
+        RichiestaConsDto res = service.getRichiestaCons(id);
         return ResponseEntity.ok(res);
     }
 
    @PostMapping()
    public ResponseEntity<Long> addRichiestaCons(@RequestBody @Valid AddRichiestaConsRequest request) {
-        Long id = null;
-        return ResponseEntity.ok(id);
+     Long res = service.addRichiestaCons(request);
+     return ResponseEntity.ok(res);
    }
 
-   @PutMapping("/{id}")
-   public ResponseEntity<Void> validateRichiestaCons(@PathVariable Long id) {
-        return null;
+   @PutMapping("/validate/{id}")
+   public ResponseEntity<Void> validateRichiestaCons(@PathVariable Long id, @RequestBody @Valid ValidateRichiestaConsRequest request) {
+        service.validateRichiestaCons(id, request);
+        return ResponseEntity.noContent().build();
+   }
+
+   @PutMapping("complete/{id}")
+   public ResponseEntity<Void> completeRichiestaCons(@PathVariable Long id) {
+     service.completeRichiestaCons(id);
+     return ResponseEntity.noContent().build();
    }
 }

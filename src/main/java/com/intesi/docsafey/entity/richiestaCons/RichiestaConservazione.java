@@ -28,24 +28,24 @@ public class RichiestaConservazione {
    private Long id; 
 
    @Column(name = "external_id", nullable = false)
-   Long externalId;
+   private Long externalId;
 
    @Column(name = "producer_id", nullable = false)
-   Long producerId;
+   private Long producerId;
 
    @Column(name = "document_type", nullable = false)
-   String documentType;
+   private String documentType;
    
    @Enumerated(EnumType.STRING)
    @Column(name = "status", nullable = false)
-   RichiestaStatus status;
+   private RichiestaStatus status;
 
    @Column(name = "created_at", nullable = false)
-   LocalDateTime createdAt;
+   private LocalDateTime createdAt;
 
    @Column(name = "updated_at", nullable = true)
-   LocalDateTime updatedAt;
+   private LocalDateTime updatedAt;
 
    @OneToMany(mappedBy = "request")
-   List<Documento> documents;
+   private List<Documento> documents;
 }
