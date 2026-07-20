@@ -27,6 +27,9 @@ import com.intesi.docsafey.repository.DocumentoRepository;
 import com.intesi.docsafey.repository.RichiestaConsRepository;
 import com.intesi.docsafey.repository.specification.RichiestaConsSpecifications;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class RichiestaConsServiceImpl implements RichiestaConsService{
 
@@ -48,8 +51,11 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
     public Long addRichiestaCons(AddRichiestaConsRequest request) {
         boolean exists = richiestaConsRepo.existsByProducerIdAndExternalId(request.producerId(), request.externalId());
 
-        if (exists)
+        if (exists) 
             throw new RichiestaAlreadyExistsException(request.producerId(), request.externalId());
+
+        log.info("Creating richiesta di conservazione with producerID={} externalID={} numDocs={}",
+            request.producerId(), request.externalId(), request.documents().size());
 
         RichiestaConservazione entity = richiestaConsMapper.toEntity(request);
         richiestaConsRepo.save(entity);
@@ -57,14 +63,17 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
         List<Documento> docs = documentoMapper.toEntityList(request.documents(), entity);
         documentoRepo.saveAll(docs);
 
+        log.info("Richiesta di conservazione created ID={}", entity.getId());
+
         return entity.getId();
     }
 
     @Override
     public RichiestaConsDto getRichiestaCons(Long id) {
+        log.debug("Retrieving richiesta di conservazione with ID={}", id);
         Optional<RichiestaConservazione> entity = richiestaConsRepo.findById(id);
 
-        if (entity.isEmpty()) 
+        if (entity.isEmpty())  
            throw new RichiestaNotFoundException(id); 
     
         RichiestaConsDto res = richiestaConsMapper.toDto(entity.get());
@@ -73,12 +82,16 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
 
     @Override
     public SearchRichiestaConsResponse searchRichiestaCons(Long producerId, String status, Pageable pageable) {
+        log.debug("Searching richieste di conservazione with producerID={} status={} page={} size={}",
+            producerId, status, pageable.getPageNumber(), pageable.getPageSize());
+
         RichiestaStatus statusQuery = null;
 
         if (status != null) {
             try {
             statusQuery = RichiestaStatus.valueOf(status);
             } catch (IllegalArgumentException ex) {
+                log.warn("Invalid status filter provided: '{}'", status);
                 throw new RichiestaInvalidStatusException(status);
             }
         }
@@ -109,9 +122,11 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
    @Override
    @Transactional
     public void validateRichiestaCons(Long id, ValidateRichiestaConsRequest request) {
+        log.info("Validating richiesta di conservazione with ID={}", id);
+
         Optional<RichiestaConservazione> entityCheck = richiestaConsRepo.findById(id);
 
-        if(entityCheck.isEmpty())
+        if(entityCheck.isEmpty())  
             throw new RichiestaNotFoundException(id);
 
         RichiestaConservazione entity = entityCheck.get();        
@@ -128,11 +143,15 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
         entity.setUpdatedAt(LocalDateTime.now());
 
         richiestaConsRepo.save(entity);
+
+        log.info("Richiesta di conservazione with ID={} validated, new status={}", entity.getId(), newStatus.toString());
     }
 
     @Override
     @Transactional
     public void completeRichiestaCons(Long id) {
+        log.info("Completing richiesta di conservazione with ID={}", id);
+
         Optional<RichiestaConservazione> entityCheck = richiestaConsRepo.findById(id);
 
         if(entityCheck.isEmpty())
@@ -151,6 +170,8 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
         entity.setUpdatedAt(LocalDateTime.now());
     
         richiestaConsRepo.save(entity);
+
+        log.info("Richiesta di conservazione with ID={} completed", id);
     }
 
 }

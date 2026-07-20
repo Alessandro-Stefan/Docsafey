@@ -1,7 +1,5 @@
 package com.intesi.docsafey.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,12 +12,16 @@ import com.intesi.docsafey.exception.richiestaCons.RichiestaAlreadyExistsExcepti
 import com.intesi.docsafey.exception.richiestaCons.RichiestaInvalidStatusException;
 import com.intesi.docsafey.exception.richiestaCons.RichiestaNotFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     
     @ExceptionHandler(RichiestaNotFoundException.class)
     public ProblemDetail handleNotFound(RichiestaNotFoundException ex) {
+        log.warn("Not found: {}", ex.getMessage());
+
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problem.setTitle("Richiesta not found");
 
@@ -28,6 +30,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RichiestaAlreadyExistsException.class)
     public ProblemDetail handleAlreadyExists(RichiestaAlreadyExistsException ex) {
+        log.warn("Already exists: {}", ex.getMessage());
+
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problem.setTitle("Richiesta already exists");
         
@@ -36,6 +40,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RichiestaInvalidStatusException.class)
     public ProblemDetail handleInvalidStatus(RichiestaInvalidStatusException ex) {
+        log.warn("Invalid status: {}", ex.getMessage());
+
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         problem.setTitle("Status Richiesta invalid");
 
@@ -44,6 +50,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
+        log.warn("Invalid or malformed payload: {}", ex.getMessage());
         String detail = BindErrorUtils.resolveAndJoin(ex.getAllErrors());
 
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
