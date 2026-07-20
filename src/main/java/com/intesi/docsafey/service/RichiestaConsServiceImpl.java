@@ -122,15 +122,15 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
    @Override
    @Transactional
     public void validateRichiestaCons(Long id, ValidateRichiestaConsRequest request) {
-        log.info("Validating richiesta di conservazione with ID={}", id);
+        RichiestaStatus newStatus = RichiestaStatus.valueOf(request.status().name());
 
         Optional<RichiestaConservazione> entityCheck = richiestaConsRepo.findById(id);
-
         if(entityCheck.isEmpty())  
             throw new RichiestaNotFoundException(id);
+        
+        log.info("Validating richiesta di conservazione with ID={}", id);
 
         RichiestaConservazione entity = entityCheck.get();        
-
         if (!entity.getStatus().equals(RichiestaStatus.RECEIVED)) {
            throw new RichiestaInvalidStatusException(String.format("Richiesta di conservazione with ID: %d has an invalid status, status required: %s | found: %s", 
                                                         entity.getId(), 
@@ -138,7 +138,6 @@ public class RichiestaConsServiceImpl implements RichiestaConsService{
                                                         entity.getStatus().name()));
         }
 
-        RichiestaStatus newStatus = RichiestaStatus.valueOf(request.status().name());
         entity.setStatus(newStatus);
         entity.setUpdatedAt(LocalDateTime.now());
 

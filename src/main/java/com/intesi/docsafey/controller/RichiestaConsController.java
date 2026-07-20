@@ -1,5 +1,7 @@
 package com.intesi.docsafey.controller;
 
+import java.net.URI;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +51,9 @@ public class RichiestaConsController {
 
      @PostMapping()
      public ResponseEntity<Long> addRichiestaCons(@RequestBody @Valid AddRichiestaConsRequest request) {
-          Long res = service.addRichiestaCons(request);
-          return ResponseEntity.ok(res);
+          Long id = service.addRichiestaCons(request);
+          URI location = URI.create("/" + id);
+          return ResponseEntity.created(location).body(id);
      }
 
      @PutMapping("/validate/{id}")
@@ -62,7 +65,7 @@ public class RichiestaConsController {
           return ResponseEntity.noContent().build();
      }
 
-     @PutMapping("complete/{id}")
+     @PutMapping("/complete/{id}")
      public ResponseEntity<Void> completeRichiestaCons(@PathVariable Long id) {
           service.completeRichiestaCons(id);
           return ResponseEntity.noContent().build();
