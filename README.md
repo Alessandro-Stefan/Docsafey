@@ -106,6 +106,8 @@ Base path: `/v1/conservazione`
 
 La ricerca supporta paginazione standard Spring Data (`Pageable`, default `size=20`) tramite `@PageableDefault`.
 
+Tutte le APIs sono documentate utilizzando swagger-ui e openAPI, la documentazione viene esposta sul path default,all'avvio dell'applicazione: http://localhost:8080/swagger-ui/index.html
+
 ## Configurazione
 
 | Variabile | Descrizione | Dove viene usata |
